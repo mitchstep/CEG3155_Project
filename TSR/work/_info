@@ -1,0 +1,45 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+dC:/Modeltech_pe_edu_10.4a/examples
+Etsr
+Z0 w1606765199
+Z1 dC:/Users/mitch/OneDrive/Documents/GitHub/CEG3155_Project/TSR
+Z2 8C:/Users/mitch/OneDrive/Documents/GitHub/CEG3155_Project/TSR/tSr.vhd
+Z3 FC:/Users/mitch/OneDrive/Documents/GitHub/CEG3155_Project/TSR/tSr.vhd
+l0
+L3
+VS:^i0G4mQGj^1:<h2:4?e2
+!s100 KLJDg9YLelGcR4Az_lhGT0
+Z4 OP;C;10.4a;61
+32
+Z5 !s110 1606765355
+!i10b 1
+Z6 !s108 1606765355.000000
+Z7 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Users/mitch/OneDrive/Documents/GitHub/CEG3155_Project/TSR/tSr.vhd|
+Z8 !s107 C:/Users/mitch/OneDrive/Documents/GitHub/CEG3155_Project/TSR/tSr.vhd|
+!i113 1
+Z9 o-work work -2002 -explicit -O0
+Z10 tExplicit 1
+Artl
+DEx4 work 3 tsr 0 22 S:^i0G4mQGj^1:<h2:4?e2
+l18
+L11
+VkWLAhMU_]=b?6T:=oS?lX0
+!s100 ZMKIMBIe6GNo5di@jCW^]2
+R4
+32
+R5
+!i10b 1
+R6
+R7
+R8
+!i113 1
+R9
+R10
