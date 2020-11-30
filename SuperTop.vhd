@@ -1,9 +1,10 @@
 entity SuperTop is
 port(
-	logic_clock: in bit; -- is the clock for the transmitter 
+	logic_clock: in bit; -- is the clock for the transmitter. Goes to Pin_Y2
 	KEY0: in bit; -- is the button clock of the traffic lights
 	SW: in bit_vector(9 downto 0); -- SW[9] = gReset, SW[8] = SSCS, SW[7-4] = MSC_max, SW[3-0] = SSC_max
-	LEDR: out bit_vector(5 downto 0) -- LEDR[5-3] = MSTL, LEDR[2-0] = SSTL
+	LEDR: out bit_vector(5 downto 0); -- LEDR[5-3] = MSTL, LEDR[2-0] = SSTL
+	TXD: out bit -- the serial output of the TSR register. Goes on Pin_G9
 );
 end entity;
 
@@ -40,13 +41,25 @@ port(
 );
 end component;
 
-
+component tSr is 
+PORT(
+		i_reset, i_load, i_shift, Clk : IN BIT;
+		input_vector		 : IN BIT_VECTOR (8 DOWNTO 0);
+		output_value		 : OUT BIT;
+		out_vector: out bit_vector(8 downto 0)
+);
+end component;
 
 signal ground: bit_vector(8 downto 0); -- goes into inputs 6 and 7 of the 3-to-8 9 bit Mux
 signal irq,S2,S1,S0,load_TDR,load_TSR,shift_TSR: bit; -- inputs and outputs of transmitter logic
 signal ss_lights,ms_lights: bit_vector(2 downto 0);
 signal mstl_0,mstl_1,mstl_2,mstl_3,mstl_4,mstl_5: bit_vector(8 downto 0);
 signal mux_out_vector: bit_vector(8 downto 0);
+
+signal mstl_0_1bit_out,mstl_1_1bit_out,mstl_2_1bit_out,mstl_3_1bit_out,mstl_4_1bit_out,mstl_5_1bit_out: bit; -- mstl least significant bits
+signal mstl_0_out,mstl_1_out,mstl_2_out,mstl_3_out,mstl_4_out,mstl_5_out: bit_vector(8 downto 0); -- mstl outputs
+signal TDR_out_vector,TSR_out_vector: bit_vector(8 downto 0);
+signal TDR_lsb: bit;
 
 begin
 
@@ -60,12 +73,27 @@ begin
 	LEDR(1) <= ss_lights(1);
 	LEDR(0) <= ss_lights(0);
 
+	MSTL0: tSr port map('0',irq,'0',logic_clock,mstl_0,mstl_0_1bit_out,mstl_0_out);
+	MSTL1: tSr port map('0',irq,'0',logic_clock,mstl_1,mstl_1_1bit_out,mstl_1_out);
+	MSTL2: tSr port map('0',irq,'0',logic_clock,mstl_2,mstl_2_1bit_out,mstl_2_out);
+	MSTL3: tSr port map('0',irq,'0',logic_clock,mstl_3,mstl_3_1bit_out,mstl_3_out);
+	MSTL4: tSr port map('0',irq,'0',logic_clock,mstl_4,mstl_4_1bit_out,mstl_4_out);
+	MSTL5: tSr port map('0',irq,'0',logic_clock,mstl_5,mstl_5_1bit_out,mstl_5_out);
+
+	Mux_3to8_9bit: Mux_8to1_9bit port map (mstl_0_out,mstl_1_out,mstl_2_out,mstl_3_out,mstl_4_out,mstl_5_out,ground,ground,S0,S1,S2,mux_out_vector);
+
+	TDR_Register: tSr port map('0',load_TDR,'0',logic_clock,mux_out_vector, -- in bits
+			TDR_lsb,TDR_out_vector); -- out bits
+	
+	TSR_Register: tSr port map('0',load_TSR,shift_TSR,logic_clock,TDR_out_vector, -- in bits
+			TXD,TSR_out_vector); -- out bits
+
 	Generator_IRQ: irq_generator port map(ms_lights,ss_lights,logic_clock, -- in bits
 			irq,mstl_0,mstl_1,mstl_2,mstl_3,mstl_4,mstl_5); -- out bits
 	
 	TransmitterLogic: TL port map(logic_clock,irq, -- in bits
 			load_TDR,load_TSR,shift_TSR,S2,S1,S0); -- out bits
 
-	--Mux_3to8_9bit: Mux_8to1_9bit port map (0,1,2,3,4,5,ground,ground,S0,S1,S2,mux_out_vector);
+	
 
 end architecture;
