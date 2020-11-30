@@ -2,7 +2,7 @@
 	
 ENTITY tSr IS
 	PORT(
-		i_reset, i_load, Clk : IN BIT;
+		i_reset, i_load, i_shift, Clk : IN BIT;
 		input_vector		 : IN BIT_VECTOR (8 DOWNTO 0);
 		output_value		 : OUT BIT
 	    );
@@ -22,7 +22,9 @@ BEGIN
 				
 				if (i_load='1') and (Clk = '1') and (Clk'event) then
 				int_value <= input_vector;
-				else
+				end if;
+				
+				if(i_shift = '1') and (CLK = '1') and (Clk'event) then
 				int_value(7)<=int_value(8);
 				int_value(6)<=int_value(7);
 				int_value(5)<=int_value(6);
