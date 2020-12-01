@@ -50,6 +50,10 @@ PORT(
 );
 end component;
 
+component or2_gate is
+port(a,b: in bit; z: out bit);
+end component;
+
 signal ground: bit_vector(8 downto 0); -- goes into inputs 6 and 7 of the 3-to-8 9 bit Mux
 signal irq,S2,S1,S0,load_TDR,load_TSR,shift_TSR: bit; -- inputs and outputs of transmitter logic
 signal ss_lights,ms_lights: bit_vector(2 downto 0);
@@ -58,8 +62,11 @@ signal mux_out_vector: bit_vector(8 downto 0);
 
 signal mstl_0_1bit_out,mstl_1_1bit_out,mstl_2_1bit_out,mstl_3_1bit_out,mstl_4_1bit_out,mstl_5_1bit_out: bit; -- mstl least significant bits
 signal mstl_0_out,mstl_1_out,mstl_2_out,mstl_3_out,mstl_4_out,mstl_5_out: bit_vector(8 downto 0); -- mstl outputs
-signal TDR_out_vector,TSR_out_vector: bit_vector(8 downto 0);
+signal TDR_out_vector: bit_vector(8 downto 0);
+signal TSR_out_vector: bit_vector(8 downto 0) := "111111111";
 signal TDR_lsb: bit;
+signal TXD_temp: bit;
+signal spark: bit := '1';
 
 begin
 
@@ -86,7 +93,9 @@ begin
 			TDR_lsb,TDR_out_vector); -- out bits
 	
 	TSR_Register: tSr port map('0',load_TSR,shift_TSR,logic_clock,TDR_out_vector, -- in bits
-			TXD,TSR_out_vector); -- out bits
+			TXD_temp,TSR_out_vector); -- out bits
+
+	TXD <= TXD_temp or spark;
 
 	Generator_IRQ: irq_generator port map(ms_lights,ss_lights,logic_clock, -- in bits
 			irq,mstl_0,mstl_1,mstl_2,mstl_3,mstl_4,mstl_5); -- out bits
@@ -94,6 +103,11 @@ begin
 	TransmitterLogic: TL port map(logic_clock,irq, -- in bits
 			load_TDR,load_TSR,shift_TSR,S2,S1,S0); -- out bits
 
-	
+	process(logic_clock)
+	begin
+	if shift_TSR = '1' then
+		spark <= '0';
+	end if;
+	end process;
 
 end architecture;
