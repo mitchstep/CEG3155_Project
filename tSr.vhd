@@ -21,11 +21,11 @@ BEGIN
 		process(Clk,i_load)
 			begin
 				
-				if (i_load='1') and (Clk = '1') and (Clk'event) then
+				if (i_load='1') then
 				int_value <= input_vector;
 				end if;
 				
-				if(i_shift = '1') and (CLK = '1') and (Clk'event) then
+				if(i_shift = '1') then
 				int_value(8) <= '1';
 				int_value(7)<=int_value(8);
 				int_value(6)<=int_value(7);
